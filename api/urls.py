@@ -28,3 +28,9 @@ urlpatterns = [
         name='user-detail'
     ),
 ]
+
+from django.urls import path, include
+
+urlpatterns = [
+    path('assignments/', include('assignments.urls')),
+]
