@@ -10,13 +10,15 @@ from .serializers import (
     SubmissionSerializer
 )
 
+from .permissions import IsLecturer, IsRep
+
 
 # =========================
-# UNIT VIEWS
+# UNIT VIEWS (LECTURER ONLY)
 # =========================
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLecturer])
 def units(request):
 
     if request.method == 'GET':
@@ -35,11 +37,11 @@ def units(request):
 
 
 # =========================
-# ASSIGNMENT VIEWS
+# ASSIGNMENT VIEWS (LECTURER ONLY)
 # =========================
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLecturer])
 def assignments(request):
 
     if request.method == 'GET':
@@ -58,11 +60,11 @@ def assignments(request):
 
 
 # =========================
-# GROUP ASSIGNMENT TRACKING
+# GROUP ASSIGNMENT TRACKING (REP OR LECTURER VIEW)
 # =========================
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsRep | IsLecturer])
 def group_assignments(request):
 
     data = GroupAssignment.objects.all()
@@ -78,12 +80,32 @@ def group_assignments(request):
 @permission_classes([IsAuthenticated])
 def submissions(request):
 
+    # -------------------------
+    # GET (Rep or Lecturer only)
+    # -------------------------
     if request.method == 'GET':
+
+        if request.user.role not in ['rep', 'lecturer']:
+            return Response(
+                {"error": "Not allowed"},
+                status=403
+            )
+
         data = Submission.objects.all()
         serializer = SubmissionSerializer(data, many=True)
         return Response(serializer.data)
 
+    # -------------------------
+    # POST (Leader only)
+    # -------------------------
     if request.method == 'POST':
+
+        if request.user.role != 'leader':
+            return Response(
+                {"error": "Only group leaders can submit"},
+                status=403
+            )
+
         serializer = SubmissionSerializer(data=request.data)
 
         if serializer.is_valid():
