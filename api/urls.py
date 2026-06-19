@@ -5,6 +5,7 @@ from .views import (
     user_list,
     user_detail
 )
+from django.urls import path, include
 
 urlpatterns = [
 
@@ -27,10 +28,6 @@ urlpatterns = [
         user_detail,
         name='user-detail'
     ),
-]
-
-from django.urls import path, include
-
-urlpatterns = [
-    path('assignments/', include('assignments.urls')),
+     path('assignments/', include('assignments.urls')),
+     path('tasks/', include('tasks.urls')),
 ]

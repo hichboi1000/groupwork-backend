@@ -13,21 +13,18 @@ class Task(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
 
-    # 🔥 IMPORTANT: Task belongs to an Assignment
     assignment = models.ForeignKey(
         'assignments.Assignment',
         on_delete=models.CASCADE,
         related_name='tasks'
     )
 
-    # Group working on this task
     group = models.ForeignKey(
         'groups.Group',
         on_delete=models.CASCADE,
         related_name='tasks'
     )
 
-    # Who is responsible for this task
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -40,7 +37,11 @@ class Task(models.Model):
         default='todo'
     )
 
-    deadline = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='created_tasks'
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
