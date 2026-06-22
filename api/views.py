@@ -107,7 +107,7 @@ def user_detail(request, pk):
             status=204
         )
     
-    @api_view(['POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_group(request):
 
