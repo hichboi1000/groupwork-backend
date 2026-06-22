@@ -1,10 +1,31 @@
+import random
+import string
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from users.models import User
-from .serializers import UserSerializer
+from groups.models import Group
 
+from .serializers import (
+    UserSerializer,
+    GroupSerializer
+)
+
+def generate_group_code():
+
+    while True:
+
+        code = ''.join(
+            random.choices(
+                string.ascii_uppercase + string.digits,
+                k=6
+            )
+        )
+
+        if not Group.objects.filter(code=code).exists():
+            return code
 
 # PUBLIC - Anyone can create an account
 @api_view(['POST'])
@@ -85,3 +106,36 @@ def user_detail(request, pk):
             {'message': 'User deleted successfully'},
             status=204
         )
+    
+    @api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_group(request):
+
+    if request.user.role != 'leader':
+        return Response(
+            {
+                "error": "Only leaders can create groups"
+            },
+            status=403
+        )
+
+    if Group.objects.filter(members=request.user).exists():
+
+        return Response(
+            {
+                "error": "You already belong to a group"
+            },
+            status=400
+        )
+
+    group = Group.objects.create(
+        name=request.data['name'],
+        code=generate_group_code(),
+        leader=request.user
+    )
+
+    group.members.add(request.user)
+
+    serializer = GroupSerializer(group)
+
+    return Response(serializer.data, status=201)
