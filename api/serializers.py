@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import User
-
+from groups.models import Group
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -20,3 +20,18 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+class GroupSerializer(serializers.ModelSerializer):
+
+    leader = serializers.StringRelatedField()
+    members = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Group
+        fields = [
+            'id',
+            'name',
+            'code',
+            'leader',
+            'members',
+            'created_at'
+        ]
