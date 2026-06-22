@@ -3,12 +3,18 @@ from django.urls import path
 from .views import (
     register_user,
     user_list,
-    user_detail
+    user_detail,
+    create_group
 )
 from django.urls import path, include
 
 urlpatterns = [
-
+    
+    path(
+        'groups/create/',
+        create_group,
+        name='create-group'
+    ),
     # Public
     path(
         'register/',
