@@ -10,7 +10,8 @@ from groups.models import Group
 
 from .serializers import (
     UserSerializer,
-    GroupSerializer
+    GroupSerializer,
+    JoinGroupSerializer
 )
 
 def generate_group_code():
@@ -139,3 +140,45 @@ def create_group(request):
     serializer = GroupSerializer(group)
 
     return Response(serializer.data, status=201)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def join_group(request):
+
+    serializer = JoinGroupSerializer(data=request.data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=400)
+
+    code = serializer.validated_data['code']
+
+    try:
+        group = Group.objects.get(code=code)
+
+    except Group.DoesNotExist:
+
+        return Response(
+            {
+                "error": "Invalid group code"
+            },
+            status=404
+        )
+
+    # Already in any group?
+    if Group.objects.filter(members=request.user).exists():
+
+        return Response(
+            {
+                "error": "You already belong to a group"
+            },
+            status=400
+        )
+
+    group.members.add(request.user)
+
+    return Response(
+        {
+            "message": f"You joined {group.name}"
+        },
+        status=200
+    )

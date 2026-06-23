@@ -35,3 +35,6 @@ class GroupSerializer(serializers.ModelSerializer):
             'members',
             'created_at'
         ]
+
+class JoinGroupSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=20)

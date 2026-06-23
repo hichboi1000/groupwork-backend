@@ -4,7 +4,8 @@ from .views import (
     register_user,
     user_list,
     user_detail,
-    create_group
+    create_group,
+    join_group
 )
 from django.urls import path, include
 
@@ -34,6 +35,11 @@ urlpatterns = [
         user_detail,
         name='user-detail'
     ),
-     path('assignments/', include('assignments.urls')),
-     path('tasks/', include('tasks.urls')),
+    path(
+        'groups/join/',
+        join_group,
+        name='join-group'
+    ),
+    path('assignments/', include('assignments.urls')),
+    path('tasks/', include('tasks.urls')),
 ]
