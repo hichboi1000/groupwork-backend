@@ -42,7 +42,7 @@ urlpatterns = [
         name='join-group'
     ),
     path(
-        'groups/my-group/',
+        'groups/me/',
         my_group,
         name='my-group'
     ),
