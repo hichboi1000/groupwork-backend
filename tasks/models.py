@@ -16,7 +16,9 @@ class Task(models.Model):
     assignment = models.ForeignKey(
         'assignments.Assignment',
         on_delete=models.CASCADE,
-        related_name='tasks'
+        related_name='tasks', 
+        null=True,
+        blank=True
     )
 
     group = models.ForeignKey(
