@@ -182,3 +182,23 @@ def join_group(request):
         },
         status=200
     )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_group(request):
+
+    try:
+        group = Group.objects.get(members=request.user)
+
+    except Group.DoesNotExist:
+
+        return Response(
+            {
+                "error": "You do not belong to any group"
+            },
+            status=404
+        )
+
+    serializer = GroupSerializer(group)
+
+    return Response(serializer.data)
