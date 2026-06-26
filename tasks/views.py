@@ -68,7 +68,8 @@ def tasks(request):
         # -------------------------
         # RULE 2: Assigned user must be group member
         # -------------------------
-        if not group.members.filter(id=assigned_to_id).exists():
+        if assigned_to_id:
+         if not group.members.filter(id=assigned_to_id).exists():
             return Response(
                 {"error": "User must be a member of the group"},
                 status=400
